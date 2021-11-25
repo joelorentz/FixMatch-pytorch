@@ -20,6 +20,8 @@ from tqdm import tqdm
 from dataset.cifar import DATASET_GETTERS
 from utils import AverageMeter, accuracy
 
+from pytorch_utils import initialize_model
+
 logger = logging.getLogger(__name__)
 best_acc = 0
 
@@ -79,7 +81,7 @@ def main():
     parser.add_argument("--expand-labels", action="store_true",
                         help="expand labels to fit eval steps")
     parser.add_argument('--arch', default='wideresnet', type=str,
-                        choices=['wideresnet', 'resnext'],
+                        choices=['wideresnet', 'resnext', 'resnet20', 'resnet56'],
                         help='dataset name')
     parser.add_argument('--total-steps', default=2**20, type=int,
                         help='number of total steps to run')
@@ -141,6 +143,12 @@ def main():
                                          depth=args.model_depth,
                                          width=args.model_width,
                                          num_classes=args.num_classes)
+        else:
+            model = initialize_model(
+                args.arch,
+                num_classes=args.num_classes,
+            )
+                                        
         logger.info("Total params: {:.2f}M".format(
             sum(p.numel() for p in model.parameters())/1e6))
         return model
